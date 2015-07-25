@@ -15,7 +15,10 @@ WORKDIR /usr/src/app
 RUN npm install
 COPY . /usr/src/app
 
-
+# nginx port
 EXPOSE 8080
+
+# admin port
+EXPOSE 8090
 
 CMD ["npm", "start"]
