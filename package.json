@@ -21,6 +21,7 @@
   "homepage": "https://github.com/csats/meteor-throttle#readme",
   "dependencies": {
     "babel": "^5.8.5",
+    "colors": "^1.1.2",
     "express": "^4.13.1"
   }
 }
