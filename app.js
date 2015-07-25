@@ -6,7 +6,7 @@
 import express from 'express';
 import path from 'path';
 import Nginx from './lib/nginx';
-import NginxConfig from './lib/nginxConfig';
+import NginxConfig from './lib/nginxconfig';
 import mkdirp from 'mkdirp';
 
 // Resolve file paths, set up some directories
@@ -26,4 +26,4 @@ app.get('/', function(req, res){
   res.send('i am a node application');
 });
 
-app.listen(8090);
+app.listen(8888);
