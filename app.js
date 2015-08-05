@@ -6,7 +6,7 @@
 import express from 'express';
 import path from 'path';
 import Nginx from './lib/nginx';
-import NginxConfig from './lib/nginxconfig';
+import NginxManager from './lib/nginxmanager';
 import mkdirp from 'mkdirp';
 import logger from './lib/logger';
 
@@ -19,32 +19,29 @@ const tmpDir = path.resolve(__dirname, 'tmp');
 mkdirp.sync(tmpDir);
 const outputPath = path.resolve(tmpDir, 'nginx.conf');
 
-// Get test config.
-
-const nginxConfig = new NginxConfig({outputPath});
+const nginxManager = new NginxManager();
 
 // Rando test config
-nginxConfig.addService({
+nginxManager.addService({
   name: "test-service",
   address: "test-server.local",
   port: 8080,
 });
 
-nginxConfig.addServer({
+nginxManager.addServer({
   name: "test01",
   service: "test-service",
   host: "localhost",
-  port: 9090,
+  port: 7080,
 });
 
-nginxConfig.addServer({
+nginxManager.addServer({
   name: "test01",
   service: "test-service",
   host: "localhost",
-  port: 9091,
+  port: 7070,
 });
 
-const nginx = new Nginx(outputPath);
 const app = express();
 
 logger.greet();
