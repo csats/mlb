@@ -1,0 +1,15 @@
+<head>
+  <title>MLB test server</title>
+</head>
+
+<body>
+  {{> info}}
+</body>
+
+<template name="info">
+  {{#if port}}
+    Hi! I am a test server listening on port <strong>{{port}}</strong>
+  {{else}}
+    Loading port...
+  {{/if}}
+</template>
