@@ -17,10 +17,34 @@ const defaultConfigPath = path.resolve(__dirname, 'conf', 'default.conf');
 // our nginx confs to accidentally get cleaned.
 const tmpDir = path.resolve(__dirname, 'tmp');
 mkdirp.sync(tmpDir);
-const configPath = path.resolve(tmpDir, 'nginx.conf');
+const outputPath = path.resolve(tmpDir, 'nginx.conf');
 
-const nginxConfig = new NginxConfig(configPath);
-const nginx = new Nginx(configPath);
+// Get test config.
+
+const nginxConfig = new NginxConfig({outputPath});
+
+// Rando test config
+nginxConfig.addService({
+  name: "test-service",
+  address: "test-server.local",
+  port: 8080,
+});
+
+nginxConfig.addServer({
+  name: "test01",
+  service: "test-service",
+  host: "localhost",
+  port: 9090,
+});
+
+nginxConfig.addServer({
+  name: "test01",
+  service: "test-service",
+  host: "localhost",
+  port: 9091,
+});
+
+const nginx = new Nginx(outputPath);
 const app = express();
 
 logger.greet();
