@@ -8,6 +8,7 @@ import path from 'path';
 import Nginx from './lib/nginx';
 import NginxConfig from './lib/nginxconfig';
 import mkdirp from 'mkdirp';
+import logger from './lib/logger';
 
 // Resolve file paths, set up some directories
 const defaultConfigPath = path.resolve(__dirname, 'conf', 'default.conf');
@@ -18,9 +19,11 @@ const tmpDir = path.resolve(__dirname, 'tmp');
 mkdirp.sync(tmpDir);
 const configPath = path.resolve(tmpDir, 'nginx.conf');
 
-const nginxConfig = new NginxConfig(defaultConfigPath, configPath);
+const nginxConfig = new NginxConfig(configPath);
 const nginx = new Nginx(configPath);
 const app = express();
+
+logger.greet();
 
 app.get('/', function(req, res){
   res.send('i am a node application');
