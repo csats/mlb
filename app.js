@@ -13,12 +13,6 @@ import logger from './lib/logger';
 // Resolve file paths, set up some directories
 const defaultConfigPath = path.resolve(__dirname, 'conf', 'default.conf');
 
-// I don't really want to use system temp dirs.. we're only writing a few files, and I don't want
-// our nginx confs to accidentally get cleaned.
-const tmpDir = path.resolve(__dirname, 'tmp');
-mkdirp.sync(tmpDir);
-const outputPath = path.resolve(tmpDir, 'nginx.conf');
-
 const nginxManager = new NginxManager();
 
 // Rando test config
@@ -46,8 +40,8 @@ const app = express();
 
 logger.greet();
 
-app.get('/', function(req, res){
-  res.send('i am a node application');
+app.get('/services', function(req, res){
+
 });
 
 app.listen(8888);
