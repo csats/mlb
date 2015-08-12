@@ -10,9 +10,6 @@ import NginxManager from './lib/nginxmanager';
 import mkdirp from 'mkdirp';
 import logger from './lib/logger';
 
-// Resolve file paths, set up some directories
-const defaultConfigPath = path.resolve(__dirname, 'conf', 'default.conf');
-
 const nginxManager = new NginxManager();
 
 // Rando test config
