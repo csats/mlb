@@ -4,40 +4,57 @@
 //
 
 import express from 'express';
-import path from 'path';
-import Nginx from './lib/nginx';
+
 import NginxManager from './lib/nginxmanager';
-import mkdirp from 'mkdirp';
 import logger from './lib/logger';
+import options from './lib/options';
 
 const nginxManager = new NginxManager();
-
-// Rando test config
-nginxManager.addService({
-  name: "test-service",
-  address: "test-server.local",
-  port: 8080,
-});
-
-nginxManager.addServer({
-  name: "test01",
-  service: "test-service",
-  host: "localhost",
-  port: 7080,
-});
-
-nginxManager.addServer({
-  name: "test01",
-  service: "test-service",
-  host: "localhost",
-  port: 7070,
-});
-
 const app = express();
 
 logger.greet();
 
-app.get('/services', function(req, res){
+// Domains!
+
+app.get('/domains', function(req, res){
+
+});
+
+app.post('/domains', function(req, res){
+
+});
+
+app.get('/domains/:domainId', function(req, res){
+
+});
+
+app.put('/domains/:domainId', function(req, res) {
+
+});
+
+app.delete('/domains/:domainId', function(req, res) {
+
+});
+
+// Servers!
+
+app.get('/servers', function(req, res){
+
+});
+
+app.post('/servers', function(req, res){
+
+});
+
+app.get('/servers/:serverId', function(req, res){
+
+});
+
+app.put('/servers/:serverId', function(req, res) {
+
+});
+
+app.delete('/servers/:serverId', function(req, res) {
 
 });
 
