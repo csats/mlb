@@ -8,11 +8,13 @@ import express from 'express';
 import NginxManager from './lib/nginxmanager';
 import logger from './lib/logger';
 import options from './lib/options';
-
-const nginxManager = new NginxManager();
-const app = express();
+import FileStore from './lib/store/filestore';
 
 logger.greet();
+
+const nginxManager = new NginxManager();
+const fileStore = new FileStore(options.file);
+const app = express();
 
 // Domains!
 
