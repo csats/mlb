@@ -4,6 +4,8 @@
 //
 
 import express from 'express';
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
 
 import NginxManager from './lib/nginxmanager';
 import logger from './lib/logger';
@@ -12,18 +14,36 @@ import FileStore from './lib/store/filestore';
 
 logger.greet();
 
-const nginxManager = new NginxManager();
-const fileStore = new FileStore(options.file);
+// const nginxManager = new NginxManager();
+const store = new FileStore(options.file);
 const app = express();
+
+app.use(morgan('combined'));
+app.use(bodyParser.json());
+
+let doErr = function (res) {
+  return function(err) {
+    console.error(err);
+    res.status(500);
+    res.end();
+  };
+}
 
 // Domains!
 
-app.get('/domains', function(req, res){
-
+app.get('/domains', function(req, res) {
+  store.domains.find().then(function(docs) {
+    res.status(200);
+    res.json(docs);
+    res.end();
+  }).catch(doErr(res));
 });
 
 app.post('/domains', function(req, res){
-
+  store.domains.insert(req.body).then(function() {
+    res.status(201);
+    res.end();
+  }).catch(doErr(res));
 });
 
 app.get('/domains/:domainId', function(req, res){
