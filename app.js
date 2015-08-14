@@ -11,6 +11,7 @@ import NginxManager from './lib/nginxmanager';
 import logger from './lib/logger';
 import options from './lib/options';
 import FileStore from './lib/store/filestore';
+import {DomainModel, ServerModel} from './lib/models';
 
 logger.greet();
 
@@ -21,65 +22,7 @@ const app = express();
 app.use(morgan('combined'));
 app.use(bodyParser.json());
 
-let doErr = function (res) {
-  return function(err) {
-    console.error(err);
-    res.status(500);
-    res.end();
-  };
-}
-
-// Domains!
-
-app.get('/domains', function(req, res) {
-  store.domains.find().then(function(docs) {
-    res.status(200);
-    res.json(docs);
-    res.end();
-  }).catch(doErr(res));
-});
-
-app.post('/domains', function(req, res) {
-  let domain = req.body;
-  store.domains.insert(domain).then(function() {
-    res.status(201);
-    res.json(domain);
-    res.end();
-  }).catch(doErr(res));
-});
-
-app.get('/domains/:domainId', function(req, res){
-
-});
-
-app.put('/domains/:domainId', function(req, res) {
-
-});
-
-app.delete('/domains/:domainId', function(req, res) {
-
-});
-
-// Servers!
-
-app.get('/servers', function(req, res){
-
-});
-
-app.post('/servers', function(req, res){
-
-});
-
-app.get('/servers/:serverId', function(req, res){
-
-});
-
-app.put('/servers/:serverId', function(req, res) {
-
-});
-
-app.delete('/servers/:serverId', function(req, res) {
-
-});
+app.use('/domains', new DomainModel(store));
+app.use('/servers', new ServerModel(store));
 
 app.listen(8888);
