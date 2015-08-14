@@ -39,9 +39,11 @@ app.get('/domains', function(req, res) {
   }).catch(doErr(res));
 });
 
-app.post('/domains', function(req, res){
-  store.domains.insert(req.body).then(function() {
+app.post('/domains', function(req, res) {
+  let domain = req.body;
+  store.domains.insert(domain).then(function() {
     res.status(201);
+    res.json(domain);
     res.end();
   }).catch(doErr(res));
 });
