@@ -21,22 +21,52 @@ let Resource = class {
     if (typeof id === 'string') {
       url += '/' + id;
     }
-    return axios.get(url).then(function(res) {
+    return axios.get(url)
+
+    .then(function(res) {
       return res.data;
+    })
+
+    .catch(function(res) {
+      throw new Error(res);
     });
   }
 
   create(data) {
-    return axios.post(this.endpoint, data).then(function(res) {
+    return axios.post(this.endpoint, data)
+
+    .then(function(res) {
       return res.data;
+    })
+
+    .catch(function(res) {
+      throw new Error(res);
     });
   }
 
-  update() {
+  update(id, data) {
+    let url = this.endpoint + '/' + id;
+    return axios.put(url, data)
 
+    .then(function(res) {
+      return res.data;
+    })
+
+    .catch(function(res) {
+      throw new Error(res);
+    });
   }
 
-  delete() {
+  remove(id) {
+    let url = this.endpoint + '/' + id;
+    return axios.delete(url)
 
+    .then(function(res) {
+      return res.data;
+    })
+
+    .catch(function(res) {
+      throw new Error(res);
+    });
   }
 }
