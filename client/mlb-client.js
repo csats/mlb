@@ -19,7 +19,7 @@ let Resource = class {
   get(id) {
     let url = this.endpoint;
     if (typeof id === 'string') {
-      url = resolve(url, id);
+      url += '/' + id;
     }
     return axios.get(url).then(function(res) {
       return res.data;

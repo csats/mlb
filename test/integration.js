@@ -26,18 +26,16 @@ describe('MlbClient', function() {
     }).then(function(domain) {
       expect(domain.serverName).to.be(testServerName);
       expect(domain.port).to.be(testPort);
-      // expect(domain.id).to.be.ok;
-      // testId = domain.id;
+      expect(domain.id).to.be.ok;
+      testId = domain.id;
     });
   });
 
-  // it('should retrieve domains', function() {
-  //   return mlbClient.domains.get().then(function(domains) {
-  //     console.log(domains);
-  //     let domain = domains[0];
-  //     expect(domain.serverName).to.be(testServerName);
-  //     expect(domain.port).to.be(testPort);
-  //     expect(domain.id).to.be.ok;
-  //   });
-  // });
+  it('should retrieve domains', function() {
+    return mlbClient.domains.get(testId).then(function(domain) {
+      expect(domain.serverName).to.be(testServerName);
+      expect(domain.port).to.be(testPort);
+      expect(domain.id).to.be.ok;
+    });
+  });
 });
