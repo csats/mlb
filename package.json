@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node bin/mlb.js",
-    "pretest": "forever start bin/mlb.js --store file --file store.json",
+    "pretest": "forever bin/mlb.js --store file --file store.json &",
     "test": "sleep 5 && mocha --compilers js:mocha-babel",
     "posttest": "forever stop bin/mlb.js"
   },
