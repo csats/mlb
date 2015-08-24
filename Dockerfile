@@ -19,6 +19,6 @@ COPY . /usr/src/app
 EXPOSE 8080
 
 # admin port
-EXPOSE 8090
+EXPOSE 8888
 
 CMD ["npm", "start"]

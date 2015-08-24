@@ -8,7 +8,7 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 
 import logger from '../lib/logger';
-import options from './options';
+import options from '../lib/options';
 import FileStore from './store/filestore';
 import {DomainModel, ServerModel} from './models';
 
@@ -24,4 +24,4 @@ app.use(bodyParser.json());
 app.use('/domains', new DomainModel(store));
 app.use('/servers', new ServerModel(store));
 
-app.listen(8888);
+app.listen(options.api_server_port);
