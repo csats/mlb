@@ -1,6 +1,7 @@
 
 import {spawn} from 'child_process';
-import logger from './logger';
+
+import logger from '../lib/logger';
 
 /**
  * Hello! I am a wrapper class around nginx.

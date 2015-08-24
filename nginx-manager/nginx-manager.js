@@ -8,10 +8,11 @@ import Handlebars from 'handlebars';
 import _ from 'lodash';
 import temp from 'temp';
 
-import logger from './logger';
+import logger from '../lib/logger';
 import Nginx from './nginx';
+import mlbClient from '../client/mlb-client.js';
 
-const TEMPLATE_PATH = path.resolve(__dirname, '..', 'templates', 'nginx.conf.hbs');
+const TEMPLATE_PATH = path.resolve(__dirname, 'nginx.conf.hbs');
 
 export default class NginxManager {
   constructor() {
@@ -25,19 +26,9 @@ export default class NginxManager {
     this.template = Handlebars.compile(tmplString);
 
     // TODO: make write interval configurable
-    this.write = _.debounce(this._doWrite.bind(this), 5000);
+    this.write = _.throttle(this._doWrite.bind(this), 5000);
     this._doWrite(true);
     this.nginx = new Nginx(this.outputPath);
-  }
-
-  addService(service) {
-    this.data.services.push(service);
-    this.write();
-  }
-
-  addServer(server) {
-    this.data.servers.push(server);
-    this.write();
   }
 
   /**
