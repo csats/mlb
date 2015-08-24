@@ -6,7 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
-import {log} from '../logger';
+import {log} from '../../lib/logger';
 
 const DEFAULT_DATA = {
   domains: [],

@@ -7,7 +7,7 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 
-import logger from './logger';
+import logger from '../lib/logger';
 import options from './options';
 import FileStore from './store/filestore';
 import {DomainModel, ServerModel} from './models';

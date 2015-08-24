@@ -1,7 +1,7 @@
 
 import express from 'express';
 import uuid from 'node-uuid';
-import {log} from './logger';
+import {log} from '../lib/logger';
 
 /**
  * MLB Resources are individual express() apps that are mounted to various endpoints by the
