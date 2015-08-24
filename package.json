@@ -4,10 +4,10 @@
   "description": "magnanimous load balancer",
   "main": "app.js",
   "scripts": {
-    "start": "node bin/mlb.js",
-    "pretest": "forever bin/mlb.js --store file --file store.json &",
+    "start": "bin/mlb-api-server",
+    "pretest": "forever bin/mlb-api-server --store file --file store.json &",
     "test": "sleep 5 && mocha --compilers js:mocha-babel",
-    "posttest": "forever stop bin/mlb.js"
+    "posttest": "forever stop bin/mlb-api-server"
   },
   "repository": {
     "type": "git",

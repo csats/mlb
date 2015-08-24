@@ -7,11 +7,10 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 
-import NginxManager from './lib/nginxmanager';
-import logger from './lib/logger';
-import options from './lib/options';
-import FileStore from './lib/store/filestore';
-import {DomainModel, ServerModel} from './lib/models';
+import logger from './logger';
+import options from './options';
+import FileStore from './store/filestore';
+import {DomainModel, ServerModel} from './models';
 
 logger.greet();
 
