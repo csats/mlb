@@ -4,8 +4,10 @@
   "description": "magnanimous load balancer",
   "main": "app.js",
   "scripts": {
-    "start": "babel-node app.js",
-    "test": "mocha --compilers js:mocha-babel"
+    "start": "node bin/mlb.js",
+    "pretest": "forever start bin/mlb.js --store file --file store.json",
+    "test": "sleep 5 && mocha --compilers js:mocha-babel",
+    "posttest": "forever stop bin/mlb.js"
   },
   "repository": {
     "type": "git",
@@ -37,5 +39,8 @@
     "morgan": "^1.6.1",
     "node-uuid": "^1.4.3",
     "temp": "^0.8.3"
+  },
+  "devDependencies": {
+    "forever": "^0.15.1"
   }
 }
