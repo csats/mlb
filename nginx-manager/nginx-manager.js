@@ -44,7 +44,7 @@ export default class NginxManager {
       res.sendStatus(200).end();
       this.write();
     });
-    this.app.listen(process.env.NGINX_MANAGER_PORT);
+    this.app.listen(options.nginx_manager_port);
   }
 
   getData() {

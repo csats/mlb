@@ -22,6 +22,9 @@
     "url": "https://github.com/csats/meteor-throttle/issues"
   },
   "homepage": "https://github.com/csats/meteor-throttle#readme",
+  "bin": {
+    "mlb": "bin/mlb"
+  },
   "dependencies": {
     "axios": "^0.5.4",
     "babel": "^5.8.21",
