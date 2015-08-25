@@ -7,17 +7,19 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import {log} from '../../lib/logger';
+import {EventEmitter} from 'events';
 
 const DEFAULT_DATA = {
   domains: [],
   servers: [],
 };
 
-export default class FileStore {
+export default class FileStore extends EventEmitter {
 
   constructor(storePath) {
+    super();
     if (typeof storePath !== 'string') {
-      throw new Error(`Missing path for FileStore JSON. Try running with --file [path]?`)
+      throw new Error(`Missing path for FileStore JSON. Try running with --file [path]?`);
     }
     storePath = path.resolve(storePath);
     log(`Initializing FileStore with database at ${storePath}`);
@@ -90,6 +92,11 @@ export default class FileStore {
   insert(name, doc) {
     return new Promise((resolve, reject) => {
       this.data[name].push(doc);
+      this.emit('changed', {
+        action: 'insert',
+        resource: name,
+        data: [doc],
+      });
       this._write();
       resolve();
     });
@@ -108,8 +115,13 @@ export default class FileStore {
       }
       let doc = docs[0];
       _.merge(doc, newDoc);
-      resolve(doc);
+      this.emit('changed', {
+        action: 'update',
+        resource: name,
+        data: [doc],
+      });
       this._write();
+      resolve(doc);
     });
   }
 
@@ -125,8 +137,13 @@ export default class FileStore {
         throw new Error('Can only update one document for now.');
       }
       _.remove(this.data[name], selector);
-      resolve();
+      this.emit('changed', {
+        action: 'remove',
+        resource: name,
+        data: docs,
+      });
       this._write();
+      resolve();
     });
   }
 

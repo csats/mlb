@@ -75,10 +75,30 @@ export default class NginxManager {
    * Munge this.data in such a way that it's useful for rendering our handlebars templates.
    */
   templateData({domains, servers}) {
-    return {
-      upstreams: _(servers).groupBy('domain').value(),
-      services: domains,
-    };
+    // for human-readability, the name of the upstream will be hostname + id
+    const nginxPort = options.nginx_port;
+
+    domains = _.cloneDeep(domains).filter((domain) => {
+      // Set up this upstream's name as HOSTNAME_UUID
+      domain.name = domain.hostname + '_' + domain.id;
+
+      // Only use upstreams that have servers
+      return _(servers)
+        .filter({domain: domain.id})
+        .value()
+        .length > 0;
+    });
+
+    const upstreams = domains.map((domain) => {
+      return {
+        name: domain.name,
+        servers: _(servers)
+          .filter({domain: domain.id})
+          .value(),
+      }
+    });
+
+    return {upstreams, domains, nginxPort};
   }
 
   _doWrite() {
@@ -97,7 +117,7 @@ export default class NginxManager {
     })
 
     .catch((err) => {
-      logger.log('Error writing config file', err);
+      logger.log('Error writing config file', err, err.stack);
     });
   }
 }

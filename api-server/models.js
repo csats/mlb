@@ -1,6 +1,8 @@
 
 import express from 'express';
 import uuid from 'node-uuid';
+import _ from 'lodash';
+
 import {log} from '../lib/logger';
 
 /**
@@ -47,6 +49,21 @@ export class BaseModel {
   }
 
   /**
+   * Validate incoming data against our keys
+   */
+  _validate(doc) {
+    // Basic check to make sure there are no unknown keys in the doc
+    Object.keys(doc).forEach((key) => {
+      if (this.fields.indexOf(key) === -1) {
+        throw new Error('Unknown field: ' + key);
+      }
+      if (typeof doc[key] !== 'string') {
+        throw new Error('All fields must be strings');
+      }
+    });
+  }
+
+  /**
    * Respond to GET /resource requests. Lists resources.
    */
   index(req, res) {
@@ -81,8 +98,18 @@ export class BaseModel {
    * Responds to POST /resource requests.
    */
   post(req, res) {
-    let doc = req.body;
+    const doc = req.body;
     doc.id = uuid.v4();
+    const keys = Object.keys(doc);
+    this._validate(doc);
+    if (keys.length < this.fields.length) {
+      const missing = _(this.fields)
+        .without(...keys)
+        .value();
+      return res
+        .status(422)
+        .end('Missing required fields: ' + missing.join(', '));
+    }
     this.store.insert(this.name, doc)
 
     .then(() => {
@@ -104,6 +131,7 @@ export class BaseModel {
         return;
       }
       else {
+        this._validate(req.body);
         return this.store.update(this.name, {id: req.params.id}, req.body);
       }
     })
@@ -147,6 +175,7 @@ export class DomainModel extends BaseModel {
   constructor(store) {
     const app = super(store);
     this.name = 'domains';
+    this.fields = ['id', 'hostname'];
     return app;
   }
 }
@@ -158,6 +187,7 @@ export class ServerModel extends BaseModel {
   constructor(store) {
     const app = super(store);
     this.name = 'servers';
+    this.fields = ['id', 'address', 'domain'];
     return app;
   }
 }

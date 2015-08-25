@@ -11,21 +11,13 @@ events {
 http {
 
   {{#each upstreams}}
-    upstream {{@key}} {
+    upstream {{name}} {
       ip_hash;
-      {{#each this}}
-        server {{host}}:{{port}};
+      {{#each servers}}
+        server {{address}};
       {{/each}}
     }
   {{/each}}
-
-  server {
-    listen 8080;
-    location / {
-      add_header Content-Type text/plain;
-      return 200 '{{message}}';
-    }
-  }
 
   # magnanimous control server
   server {
@@ -40,10 +32,18 @@ http {
     }
   }
 
-  {{#each services}}
+  # default server... if nothing else matches, return 503
+  server {
+    listen {{nginxPort}};
+    location / {
+      return 503;
+    }
+  }
+
+  {{#each domains}}
     server {
-      listen {{port}};
-      server_name {{address}};
+      listen {{../nginxPort}};
+      server_name {{hostname}};
 
       location / {
         proxy_set_header X-Real-IP $remote_addr;

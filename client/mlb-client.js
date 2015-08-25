@@ -28,11 +28,11 @@ let Resource = class {
     })
 
     .catch(function(res) {
-      throw new Error(res);
+      throw res;
     });
   }
 
-  create(data) {
+  insert(data) {
     return axios.post(this.endpoint, data)
 
     .then(function(res) {
@@ -40,7 +40,7 @@ let Resource = class {
     })
 
     .catch(function(res) {
-      throw new Error(res);
+      throw res;
     });
   }
 
@@ -53,7 +53,7 @@ let Resource = class {
     })
 
     .catch(function(res) {
-      throw new Error(res);
+      throw res;
     });
   }
 
@@ -66,7 +66,7 @@ let Resource = class {
     })
 
     .catch(function(res) {
-      throw new Error(res);
+      throw res;
     });
   }
 }

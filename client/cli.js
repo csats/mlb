@@ -5,16 +5,23 @@ import MlbClient from './mlb-client';
 const argv = parseArgs(process.argv.slice(2));
 
 const RESOURCES = ['domains', 'servers'];
-const COMMANDS  = ['list', 'create', 'modify', 'remove'];
+const COMMANDS  = ['list', 'insert', 'update', 'remove'];
 
 const usage = function() {
   console.log('Usage: mlb --server [server] [resource] [command]');
   console.log('Resources: ' + RESOURCES.join(', '));
   console.log('Commands: ' + COMMANDS.join(', '));
+  console.log('If you don\'t want to specify server every time, you can set the');
+  console.log('MLB_SERVER environment variable.');
   process.exit(1);
 };
 
-if (argv._.length === 0 || !argv.server) {
+if (argv._.length === 0) {
+  usage();
+}
+
+const server = process.env.MLB_SERVER || argv.server;
+if (!server) {
   usage();
 }
 
@@ -33,16 +40,16 @@ if (COMMANDS.indexOf(command) === -1) {
 }
 
 const mlbClient = new MlbClient({
-  url: argv.server
+  url: server
 });
 
 const prettyPrint = (data) => {
   console.log(JSON.stringify(data, null, 4));
 };
 
-const doErr = (res) => {
+const doErr = (err) => {
   console.log('Error!');
-  prettyPrint(res);
+  prettyPrint(err);
 }
 
 // Gets the remaining argv arguments as parameters.
@@ -51,7 +58,7 @@ const getParams = () => {
   while (argv._.length > 0) {
     const arg = argv._.shift();
     if (arg.indexOf('=') === -1) {
-      console.log('Create and modify take arugments of the form key=value');
+      console.log('insert and modify take arugments of the form key=value');
     }
     const [key, value] = arg.split('=');
     ret[key] = value;
@@ -65,9 +72,9 @@ if (command === 'list') {
     .catch(doErr);
 }
 
-else if (command === 'create') {
+else if (command === 'insert') {
   const params = getParams();
-  mlbClient[resource].create(params)
+  mlbClient[resource].insert(params)
     .then(prettyPrint)
     .catch(doErr);
 }
