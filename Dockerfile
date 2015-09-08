@@ -21,4 +21,7 @@ EXPOSE 8080
 # admin port
 EXPOSE 8888
 
+# default to just hanging out at store.json
+ENV MLB_FILE store.json
+
 CMD ["npm", "start"]

@@ -4,7 +4,8 @@
   "description": "magnanimous load balancer",
   "main": "app.js",
   "scripts": {
-    "start": "bin/mlb-api-server",
+    "start": "forever --minUptime 1000 --spinSleepTime 1000 bin/mlb-api-server & sleep 5 && forever --minUptime 1000 --spinSleepTime 1000 bin/mlb-nginx-manager",
+    "stop": "forever stop bin/mlb-nginx-manager && forever stop bin/mlb-api-server",
     "pretest": "forever bin/mlb-api-server --store file --file store.json &",
     "test": "sleep 5 && mocha --compilers js:mocha-babel",
     "posttest": "forever stop bin/mlb-api-server"

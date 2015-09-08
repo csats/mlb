@@ -15,7 +15,6 @@ import {DomainModel, ServerModel} from './models';
 
 logger.greet();
 
-// const nginxManager = new NginxManager();
 const store = new FileStore(options.file);
 const app = express();
 
