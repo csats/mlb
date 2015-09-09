@@ -15,10 +15,15 @@ import Nginx from './nginx';
 import MlbClient from '../client/mlb-client.js';
 
 const TEMPLATE_PATH = path.resolve(__dirname, 'nginx.conf.hbs');
+const CERT_FILE_SUFFIX = '.crt';
+const KEY_FILE_SUFFIX = '.key';
 
 export default class NginxManager {
   constructor() {
     // Do everything sync on boot, async after we've started up.
+    this.templateData = {};
+
+    this.checkCerts();
 
     // Set up MLB client
     this.mlbClient = new MlbClient({
@@ -45,6 +50,56 @@ export default class NginxManager {
       this.write();
     });
     this.app.listen(options.nginx_manager_port);
+  }
+
+  /**
+   * Check the cert directory provided to us in optionsl Currently we only support a single cert.
+   * We expect two files to be present in `MLB_CERT_DIR` -- domain.whatever.example.com.crt and
+   * domain.whatever.example.com.key. If the directory is not present, we'll assume HTTP mode.
+   * Otherwise we expect those things to be true and error if they are not.
+   */
+  checkCerts() {
+    // Check for existence of SSL certs
+    let certDirFiles;
+    try {
+      certDirFiles = fsp.readdirSync(options.cert_dir);
+    }
+    catch (e) {
+      // If the directory doesn't exist, that's cool. If we get a different error, throw it.
+      if (e.code !== 'ENOENT') {
+        logger.fatal(e, 'Unexpected error when checking for SSL certs: ', e.message);
+      }
+    }
+
+    if (!certDirFiles) {
+      this.templateData.https = false;
+      logger.log('nginx running in HTTP mode');
+      return;
+    }
+
+    let certFiles = certDirFiles.filter((f) => {
+      return f.endsWith(CERT_FILE_SUFFIX);
+    });
+    if (certFiles.length === 0) {
+      logger.fatal('MLB_CERT_DIR provided, but no domain.crt file found.');
+    }
+    else if (certFiles.length > 1) {
+      logger.fatal('More than one cert file in MLB_CERT_DIR, we can only handle one for now.');
+    }
+    let certFile = certFiles[0];
+    let certFilePrefix = certFile.slice(0, -CERT_FILE_SUFFIX.length);
+
+    let keyFile = certFilePrefix + KEY_FILE_SUFFIX;
+    if (certDirFiles.indexOf(keyFile) === -1) {
+      logger.fatal(`Found ${certFile} but no corresponding ${keyFile}`);
+    }
+
+    this.templateData.https = true;
+    this.templateData.certPath = path.resolve(options.cert_dir, certFile);
+    this.templateData.keyPath = path.resolve(options.cert_dir, keyFile);
+    logger.log('nginx running in HTTPS mode, using certs for ' + certFilePrefix);
+
+    console.log(this.templateData);
   }
 
   getData() {
@@ -74,7 +129,7 @@ export default class NginxManager {
   /**
    * Munge this.data in such a way that it's useful for rendering our handlebars templates.
    */
-  templateData({domains, servers}) {
+  getTemplateData({domains, servers}) {
     // for human-readability, the name of the upstream will be hostname + id
     const nginxPort = options.nginx_port;
 
@@ -98,7 +153,11 @@ export default class NginxManager {
       }
     });
 
-    return {upstreams, domains, nginxPort};
+    const ret = {};
+    Object.assign(ret, this.templateData);
+    Object.assign(ret, {upstreams, domains, nginxPort});
+
+    return ret;
   }
 
   _doWrite() {
@@ -106,7 +165,7 @@ export default class NginxManager {
 
     .then(({domains, servers}) => {
       logger.log('Writing new config file.');
-      const tmplData = this.templateData({domains, servers});
+      const tmplData = this.getTemplateData({domains, servers});
       logger.log('Proceeding with template data:', JSON.stringify(tmplData, null, 4));
       const output = this.template(tmplData);
       return fsp.writeFile(this.outputPath, output);

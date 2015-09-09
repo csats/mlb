@@ -9,3 +9,11 @@ The easiest way to run me is as a Docker container. A basic command might be as 
 
     docker run --rm -d -p 8080:8080 csats/mlb
 
+
+SSL
+---
+
+SSL support works by mounting a volume at `/certs` that contains your SSL certificate and private
+key. A command might look something like this:
+
+    docker run --rm -v -d -p 8080:8080 /path/to/my/cert/dir:/certs csats/mlb
