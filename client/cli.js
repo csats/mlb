@@ -5,18 +5,38 @@ import MlbClient from './mlb-client';
 const argv = parseArgs(process.argv.slice(2));
 
 const RESOURCES = ['domains', 'servers'];
+const RESOURCE_ALIAS = {
+  'domain': 'domains',
+  'server': 'servers',
+};
+
 const COMMANDS  = ['list', 'insert', 'update', 'remove'];
+const COMMAND_ALIAS = {
+  'get': 'list',
+  'create': 'insert',
+  'modify': 'update',
+  'delete': 'remove',
+};
+
+
+//////////////////
+// argv parsing //
+//////////////////
 
 const usage = function() {
-  console.log('Usage: mlb --server [server] [resource] [command]');
-  console.log('Resources: ' + RESOURCES.join(', '));
-  console.log('Commands: ' + COMMANDS.join(', '));
+  console.log('');
+  console.log('Usage: mlb [--server (server)] [command] [resource]');
+  console.log('');
+  console.log('Commands: \n' + COMMANDS.map(c => '   ' + c).join('\n'));
+  console.log('');
+  console.log('Resources: \n' + RESOURCES.map(c => '   ' + c).join('\n'));
+  console.log('');
   console.log('If you don\'t want to specify server every time, you can set the');
   console.log('MLB_SERVER environment variable.');
   process.exit(1);
 };
 
-if (argv._.length === 0) {
+if (argv._.length < 2) {
   usage();
 }
 
@@ -25,23 +45,25 @@ if (!server) {
   usage();
 }
 
-const resource = argv._.shift();
-let command;
+let command = argv._.shift();
+let resource = argv._.shift();
 
-if (argv._.length === 0) {
-  command = 'list';
+if (COMMAND_ALIAS[command]) {
+  command = COMMAND_ALIAS[command];
 }
-else {
-  command = argv._.shift();
+
+if (RESOURCE_ALIAS[resource]) {
+  resource = RESOURCE_ALIAS[resource];
 }
 
 if (COMMANDS.indexOf(command) === -1) {
   usage();
 }
 
-const mlbClient = new MlbClient({
-  url: server
-});
+
+//////////////////////
+// helper functions //
+//////////////////////
 
 const prettyPrint = (data) => {
   console.log(JSON.stringify(data, null, 4));
@@ -49,7 +71,8 @@ const prettyPrint = (data) => {
 
 const doErr = (err) => {
   console.log('Error!');
-  prettyPrint(err);
+  console.error(JSON.stringify(err, null, 4));
+  process.exit(1);
 }
 
 // Gets the remaining argv arguments as parameters.
@@ -65,6 +88,15 @@ const getParams = () => {
   }
   return ret;
 };
+
+
+//////////////////////////
+// Actual commands here //
+//////////////////////////
+
+const mlbClient = new MlbClient({
+  url: server
+});
 
 if (command === 'list') {
   mlbClient[resource].get()
