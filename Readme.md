@@ -17,3 +17,7 @@ SSL support works by mounting a volume at `/certs` that contains your SSL certif
 key. A command might look something like this:
 
     docker run --rm -v -d -p 8080:8080 /path/to/my/cert/dir:/certs csats/mlb
+
+Your cert directory will be expected to contain two files, named according to your domain:
+`domain.tld.crt` and `domain.tld.key`. For now MLB supports a single wildcard cert -- if you need
+to terminate multiple domain it's easy enough to set up more than one MLB.
